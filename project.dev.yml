@@ -1,0 +1,25 @@
+# tian-custom: XcodeGen overlay that builds the Debug configuration as
+# "tian-dev", a separate app that runs next to the installed release tian.
+# project.yml stays untouched so upstream merges stay clean.
+#
+# The bundle id stays com.tian.app.debug on purpose: tian derives its socket,
+# state, log and UserDefaults namespaces from the ".debug" suffix, which keeps
+# tian-dev fully separate from the release app (com.tian.app).
+#
+# Generate and build with: scripts/custom/build-dev.sh
+include:
+  - project.yml
+name: tian-dev
+targets:
+  tian:
+    settings:
+      configs:
+        Debug:
+          PRODUCT_NAME: tian-dev
+          INFOPLIST_KEY_CFBundleName: tian-dev
+          INFOPLIST_KEY_CFBundleDisplayName: tian-dev
+  tianTests:
+    settings:
+      configs:
+        Debug:
+          TEST_HOST: $(BUILT_PRODUCTS_DIR)/tian-dev.app/Contents/MacOS/tian-dev

@@ -7,7 +7,8 @@ class TianAppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenter
     let workspaceManager = WorkspaceManager()
     let windowCoordinator = WindowCoordinator()
     let updaterController = SPUStandardUpdaterController(
-        startingUpdater: true,
+        // tian-custom: tian-dev never self-updates (see BuildVariant).
+        startingUpdater: !BuildVariant.isDev,
         updaterDelegate: nil,
         userDriverDelegate: nil
     )
@@ -58,7 +59,10 @@ class TianAppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenter
         // diagnosable after the fact (see `Log.perf` / `app_cpu:` lines).
         ProcessCPUMonitor.shared.start()
 
-        SkillInstaller.syncIfNeeded()
+        // tian-custom: ~/.claude/skills belongs to the release app (see BuildVariant).
+        if !BuildVariant.isDev {
+            SkillInstaller.syncIfNeeded()
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
